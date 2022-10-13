@@ -1,8 +1,6 @@
 const { Schema, model, models } = require('mongoose');
 const emailRegex = new RegExp('[a-z0-9]+@[a-z]+.[a-z]{2,3}');
-const passRegex = new RegExp(
-  '^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,}$',
-);
+
 const UsersSchema = new Schema(
   {
     name: {
@@ -22,6 +20,7 @@ const UsersSchema = new Schema(
               const user = await models.Users.findOne({ email: value });
               return !user;
             } catch {
+              console.log('no user');
               return false;
             }
           },
@@ -32,7 +31,6 @@ const UsersSchema = new Schema(
     password: {
       type: String,
       required: [true, 'Debe ingresar una contraseña.'],
-      match: [passRegex, 'Ingresar una clave segura'],
     },
   },
   {

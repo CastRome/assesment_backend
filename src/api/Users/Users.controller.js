@@ -12,7 +12,13 @@ module.exports = {
 
       //brcypt recibe (password,Salto)
       const encPassword = await bcrypt.hash(data.password, 8);
+      const { password } = data;
+      const passRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
+      if (!passRegex.test(password)) {
+        throw new Error('Password not secure');
+      }
       const newUser = {
         ...data,
         password: encPassword,

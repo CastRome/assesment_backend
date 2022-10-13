@@ -4,6 +4,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const { connect } = require('./db');
 const userRoute = require('./api/Users/Users.route');
+const favsRoute = require('./api/Favs/Favs.route');
 const { deleteModel, get } = require('mongoose');
 
 const app = express();
@@ -15,6 +16,7 @@ app.use(morgan('tiny'));
 app.use(express.json());
 
 app.use('/user', userRoute);
+app.use('/favs', favsRoute);
 
 app.listen(port, () => {
   console.log('Server Running Ok');
