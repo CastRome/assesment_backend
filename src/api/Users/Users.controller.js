@@ -68,7 +68,8 @@ module.exports = {
 
   async list(req, res) {
     try {
-      const user = await User.find();
+      const user = await User.find().select('-_id -password');
+      console.log(user);
       res.status(201).json({ message: 'user found', data: user });
     } catch (err) {
       res.status(400).json(err);
@@ -78,25 +79,11 @@ module.exports = {
   async show(req, res) {
     try {
       const { userId } = req.params;
-      const user = await User.findById(userId);
+      const user = await User.findById(userId, '-_id -password');
       //populates
       res.status(201).json({ message: 'user found', data: user });
     } catch (err) {
       res.status(400).json(err);
-    }
-  },
-
-  // post
-
-  async create(req, res) {
-    try {
-      const data = req.body;
-
-      const user = await User.create(data);
-
-      res.status(201).json({ message: 'User Created', data: user });
-    } catch (err) {
-      res.status(400).json({ message: 'User could not be created', data: err });
     }
   },
 
