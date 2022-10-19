@@ -51,19 +51,23 @@ module.exports = {
   //update
   async update(req, res) {
     try {
-      const data = req.body;
-      const { listsId } = req.params;
-      /*const user = req.userId;
-      let { userId } = await Lists.findById(commentId);
+      const { favsId, listsId } = req.params;
+      const lists = await Lists.findById(listsId);
+      //console.log('lists', lists);
+      const favList = lists.FavsId;
+      favList.push(favsId);
+      //console.log('favList', favList);
+      const user = req.userId;
 
-      if (!userId) {
-        throw new Error('Lists invalido');
+      if (!user) {
+        throw new Error('Favs invalido');
       }
 
-      if (userId._id.valueOf() !== user) {
-        throw new Error('Usuario invalido');
-      }
-    */
+      const data = {
+        UserId: user,
+        FavsId: favList,
+      };
+      console.log(data);
       const listsUpdate = await Lists.findByIdAndUpdate(listsId, data, {
         new: true,
       });
