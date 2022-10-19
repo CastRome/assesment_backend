@@ -8,6 +8,7 @@ const ListsSchema = new Schema(
     },
     FavsId: {
       type: Array,
+      ref: 'Favs',
       required: [true, 'por favor ingrese un fav'],
     },
   },

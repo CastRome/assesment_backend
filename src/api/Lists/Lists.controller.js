@@ -1,10 +1,14 @@
+const Favs = require('../Favs/Favs.model');
 const Lists = require('./Lists.model');
 
 module.exports = {
   //get all
   async list(req, res) {
     try {
-      const lists = await Lists.find();
+      const lists = await Lists.find().select('-_id -UserId').populate({
+        path: 'FavsId',
+        select: '-_id',
+      });
       res.status(201).json({ message: 'lists found', data: lists });
     } catch (err) {
       res.status(400).json(err);
@@ -14,7 +18,12 @@ module.exports = {
   async show(req, res) {
     try {
       const { listsId } = req.params;
-      const lists = await Lists.findById(listsId);
+      const lists = await Lists.findById(listsId)
+        .select('-_id -UserId')
+        .populate({
+          path: 'FavsId',
+          select: '-_id',
+        });
 
       res.status(201).json({ message: 'lists found', data: lists });
     } catch (err) {
@@ -38,7 +47,7 @@ module.exports = {
         UserId: user,
         FavsId: favList,
       };
-      console.log(newlists);
+      // console.log(newlists);
 
       const lists = await Lists.create(newlists);
       res.status(201).json({ message: 'Lists Created', data: lists });
@@ -53,21 +62,25 @@ module.exports = {
     try {
       const { favsId, listsId } = req.params;
       const lists = await Lists.findById(listsId);
-      //console.log('lists', lists);
+      console.log('lists', lists);
       const favList = lists.FavsId;
+      const userList = lists.UserId;
       favList.push(favsId);
-      //console.log('favList', favList);
+      console.log('favList', favList);
       const user = req.userId;
 
       if (!user) {
-        throw new Error('Favs invalido');
+        throw new Error('user invalido');
+      }
+      if (userList !== user) {
+        throw new Error('user invalido');
       }
 
       const data = {
         UserId: user,
         FavsId: favList,
       };
-      console.log(data);
+      //console.log(data);
       const listsUpdate = await Lists.findByIdAndUpdate(listsId, data, {
         new: true,
       });
@@ -81,17 +94,22 @@ module.exports = {
   //delete
   async destroy(req, res) {
     try {
-      /*
-      const user = req.userId;
-      const { favId } = req.params;
-      let { userId } = await Lists.findById(favId);
+      const { listsId } = req.params;
+      const lists = await Lists.findById(listsId);
 
-      
-      if (userId._id.valueOf() !== user) {
-        throw new Error('Usuario invalido');
+      const userList = lists.UserId;
+      console.log('userList', userList);
+
+      const user = req.userId;
+      console.log('user', user);
+
+      if (!user) {
+        throw new Error('user invalido');
       }
-      */
-      const fav = await Lists.findByIdAndDelete(favId);
+      if (userList !== user) {
+        throw new Error('user invalido');
+      }
+      const fav = await Lists.findByIdAndDelete(listsId);
       res.status(200).json({ message: 'Comment Deleted', data: fav });
     } catch (error) {
       res
