@@ -20,6 +20,7 @@ const UsersSchema = new Schema(
               const user = await models.Users.findOne({ email: value });
               return !user;
             } catch {
+              console.log('no user');
               return false;
             }
           },
@@ -30,8 +31,6 @@ const UsersSchema = new Schema(
     password: {
       type: String,
       required: [true, 'Debe ingresar una contraseña.'],
-      minlength: [4, 'El password es muy corto'],
-      //maxlength: [20, 'El password es muy largo'],
     },
   },
   {

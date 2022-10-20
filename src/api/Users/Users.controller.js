@@ -6,13 +6,19 @@ const jwt = require('jsonwebtoken');
 module.exports = {
   //get all
 
-  async singup(req, res, next) {
+  async signup(req, res, next) {
     try {
       const data = req.body;
 
       //brcypt recibe (password,Salto)
       const encPassword = await bcrypt.hash(data.password, 8);
+      const { password } = data;
+      const passRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
+      if (!passRegex.test(password)) {
+        throw new Error('Password not secure');
+      }
       const newUser = {
         ...data,
         password: encPassword,
@@ -25,26 +31,28 @@ module.exports = {
       });
 
       res
-        .status(200)
+        .status(201)
         .json({ message: 'User created', data: { email: data.email, token } });
     } catch (err) {
+      res
+        .status(400)
+        .json({ message: 'User could not created', error: err.message });
       next(err);
     }
   },
 
-  async singin(req, res) {
+  async signin(req, res) {
     try {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
-
+      //console.log('antes de user', user);
       if (!user) {
-        throw new Error('User not found');
+        throw new Error('Email o contraseña invalidos');
       }
 
       const isValid = await bcrypt.compare(password, user.password);
-
       if (!isValid) {
-        throw new Error('Not valid credentials');
+        throw new Error('Email o contraseña invalidos');
       }
 
       const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
@@ -52,17 +60,21 @@ module.exports = {
       });
 
       const rol = user.rol;
-      res
-        .status(200)
-        .json({ message: 'Valid User', data: { email, token, rol } });
+      res.status(201).json({
+        message: 'User login successfully',
+        data: { email, token, rol },
+      });
     } catch (err) {
-      res.status(400).json({ message: 'Unvalid Data', data: err });
+      res
+        .status(400)
+        .json({ message: 'User could not login', data: err.message });
     }
   },
 
   async list(req, res) {
     try {
-      const user = await User.find();
+      const user = await User.find().select('-_id -password');
+
       res.status(201).json({ message: 'user found', data: user });
     } catch (err) {
       res.status(400).json(err);
@@ -72,25 +84,11 @@ module.exports = {
   async show(req, res) {
     try {
       const { userId } = req.params;
-      const user = await User.findById(userId);
+      const user = await User.findById(userId, '-_id -password');
       //populates
       res.status(201).json({ message: 'user found', data: user });
     } catch (err) {
       res.status(400).json(err);
-    }
-  },
-
-  // post
-
-  async create(req, res) {
-    try {
-      const data = req.body;
-
-      const user = await User.create(data);
-
-      res.status(201).json({ message: 'User Created', data: user });
-    } catch (err) {
-      res.status(400).json({ message: 'User could not be created', data: err });
     }
   },
 
@@ -109,9 +107,9 @@ module.exports = {
     try {
       const { userId } = req.params;
       const user = await User.findByIdAndDelete(userId);
-      res.status(200).json({ message: 'Home Deleted', data: user });
+      res.status(200).json({ message: 'User Deleted', data: user });
     } catch (error) {
-      res.status(400).json({ Message: 'Home could not be Deleted', data: err });
+      res.status(400).json({ Message: 'User could not be Deleted', data: err });
     }
   },
 };
