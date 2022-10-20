@@ -26,6 +26,12 @@ module.exports = {
   async create(req, res) {
     try {
       const newfavs = req.body;
+
+      const user = req.userId;
+      if (!user) {
+        throw new Error('User invalid');
+      }
+
       const favs = await Favs.create(newfavs);
 
       res.status(201).json({ message: 'Favs Created', data: favs });
@@ -64,22 +70,20 @@ module.exports = {
   //delete
   async destroy(req, res) {
     try {
-      /*
       const user = req.userId;
       const { favId } = req.params;
       let { userId } = await Favs.findById(favId);
 
-      
       if (userId._id.valueOf() !== user) {
         throw new Error('Usuario invalido');
       }
-      */
+
       const fav = await Favs.findByIdAndDelete(favId);
-      res.status(200).json({ message: 'Comment Deleted', data: fav });
+      res.status(200).json({ message: 'Favs Deleted', data: fav });
     } catch (error) {
       res
         .status(400)
-        .json({ Message: 'Comment could not be Deleted', data: error });
+        .json({ message: 'Favs could not be Deleted', data: error });
     }
   },
 };
