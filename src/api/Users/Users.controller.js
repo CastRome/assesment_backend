@@ -52,7 +52,6 @@ module.exports = {
 
       const isValid = await bcrypt.compare(password, user.password);
       if (!isValid) {
-        console.log('val in', isValid);
         throw new Error('Email o contraseña invalidos');
       }
 
@@ -66,15 +65,16 @@ module.exports = {
         data: { email, token, rol },
       });
     } catch (err) {
-      console.log('err in', err);
-      res.status(400).json({ message: 'User could not login', data: err });
+      res
+        .status(400)
+        .json({ message: 'User could not login', data: err.message });
     }
   },
 
   async list(req, res) {
     try {
       const user = await User.find().select('-_id -password');
-      console.log(user);
+
       res.status(201).json({ message: 'user found', data: user });
     } catch (err) {
       res.status(400).json(err);

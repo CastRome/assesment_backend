@@ -88,7 +88,7 @@ describe('User', () => {
 
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toMatch(/User could not login/i);
-    expect(res.body.error).toMatch(/Email o contraseña invalidos/i);
+    expect(res.body.data).toMatch(/Email o contraseña invalidos/i);
   });
 
   it('should not login user if email does not exist', async () => {
