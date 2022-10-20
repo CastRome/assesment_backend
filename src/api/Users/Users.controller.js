@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 module.exports = {
   //get all
 
-  async singup(req, res, next) {
+  async signup(req, res, next) {
     try {
       const data = req.body;
 
@@ -31,26 +31,29 @@ module.exports = {
       });
 
       res
-        .status(200)
+        .status(201)
         .json({ message: 'User created', data: { email: data.email, token } });
     } catch (err) {
+      res
+        .status(400)
+        .json({ message: 'User could not created', error: err.message });
       next(err);
     }
   },
 
-  async singin(req, res) {
+  async signin(req, res) {
     try {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
-
+      //console.log('antes de user', user);
       if (!user) {
-        throw new Error('User not found');
+        throw new Error('Email o contraseña invalidos');
       }
 
       const isValid = await bcrypt.compare(password, user.password);
-
       if (!isValid) {
-        throw new Error('Not valid credentials');
+        console.log('val in', isValid);
+        throw new Error('Email o contraseña invalidos');
       }
 
       const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
@@ -58,11 +61,13 @@ module.exports = {
       });
 
       const rol = user.rol;
-      res
-        .status(200)
-        .json({ message: 'Valid User', data: { email, token, rol } });
+      res.status(201).json({
+        message: 'User login successfully',
+        data: { email, token, rol },
+      });
     } catch (err) {
-      res.status(400).json({ message: 'Unvalid Data', data: err });
+      console.log('err in', err);
+      res.status(400).json({ message: 'User could not login', data: err });
     }
   },
 
@@ -102,9 +107,9 @@ module.exports = {
     try {
       const { userId } = req.params;
       const user = await User.findByIdAndDelete(userId);
-      res.status(200).json({ message: 'Home Deleted', data: user });
+      res.status(200).json({ message: 'User Deleted', data: user });
     } catch (error) {
-      res.status(400).json({ Message: 'Home could not be Deleted', data: err });
+      res.status(400).json({ Message: 'User could not be Deleted', data: err });
     }
   },
 };
