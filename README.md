@@ -23,9 +23,9 @@ estas acciones se pueden apreciar desde las rutas de cada coleccion
 - Se crearon 3 colecciones: user, favs y lists
 - El token se debe enviar por medio de la convencion `Bearer *token* `
 - Es necesario crear un .env con las siguientes variables
-  MONGO_URI= <insertar el url de mongoDB para poder realizar las pruebas>
-  PORT= 8080
-  SECRET_KEY=secret_key
+  `MONGO_URI= insertar el url de mongoDB para poder realizar las pruebas`
+  `PORT= 8080`
+  `SECRET_KEY=secret_key`
 
 ## testing
 
