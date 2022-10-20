@@ -4,7 +4,7 @@
   "description":"assesment BackEnd",
   "main": "src/server.js",
   "scripts": {
-    "test": "jest --detectOpenHandles",
+    "test": "cross-env NODE_ENV=test jest --detectOpenHandles --runInBand",
     "test:coverage": "npm test -- --coverage",
     "dev": "nodemon src/server.js"
   },

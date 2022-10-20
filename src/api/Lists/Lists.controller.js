@@ -84,7 +84,7 @@ module.exports = {
       const listsUpdate = await Lists.findByIdAndUpdate(listsId, data, {
         new: true,
       });
-      res.status(200).json({ message: 'Lists Updated', data: listsUpdate });
+      res.status(201).json({ message: 'Lists Updated', data: listsUpdate });
     } catch (error) {
       res
         .status(400)
